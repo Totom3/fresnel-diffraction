@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -25,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -40,9 +42,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
 
         //Getting the screens size
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        height = screenSize.height;
-        width = screenSize.width;
+        Rectangle2D screenSize = Screen.getPrimary().getBounds();
+        height = (int) screenSize.getHeight();
+        width = (int) screenSize.getWidth();
 
         //Setting up the VBox on the left side of the screen
         GridPane leftBox = new GridPane();
@@ -53,24 +55,40 @@ public class Main extends Application {
         leftBox.setHgap(0);
         leftBox.setVgap((height / 2) / 8);
 
-        
-        //Creating a Stack Pane and a Grid Pane for real-time slider value update
-        
-        StackPane stackpane = new StackPane();
-        GridPane labelGrid = new GridPane();
-        
-        Label wavelengthValueLabel = new Label();
-        Label distanceAWValueLabel = new Label();
-        Label distanceASValueLabel = new Label();
-        Label sourceIntensityValueLabel = new Label();
-        
-        
-        stackpane.getChildren().add(labelGrid);
         //Creating all the sliders
         Slider wavelength = new Slider();
         Slider distanceAW = new Slider();
         Slider distanceAS = new Slider();
         Slider sourceIntensity = new Slider();
+        
+        //Creating a Stack Pane and a Grid Pane for real-time slider value update
+        
+        StackPane stackpane = new StackPane();
+        GridPane labelGrid = new GridPane();
+        labelGrid.setVgap((height/2)/4);
+        
+        Label wavelengthValueLabel = new Label();
+        wavelengthValueLabel.setText(String.valueOf(wavelength.getValue()));
+        Label distanceAWValueLabel = new Label(String.valueOf(distanceAW.getValue()));
+        Label distanceASValueLabel = new Label(String.valueOf(distanceAS.getValue()));
+        Label sourceIntensityValueLabel = new Label(String.valueOf(sourceIntensity.getValue()));
+        
+        GridPane.setConstraints(wavelengthValueLabel, 1, 0);
+        GridPane.setConstraints(distanceAWValueLabel, 1, 1);
+        GridPane.setConstraints(distanceASValueLabel, 1, 2);
+        GridPane.setConstraints(sourceIntensityValueLabel, 1, 3);
+        
+        GridPane.setMargin(wavelengthValueLabel, new Insets(height/40, 0, 0, leftWidth/40));
+        GridPane.setMargin(distanceAWValueLabel, new Insets(height/40, 0, 0, leftWidth/40));
+        GridPane.setMargin(distanceASValueLabel, new Insets(height/40, 0, 0, leftWidth/40));
+        GridPane.setMargin(sourceIntensityValueLabel, new Insets(height/40, 0, 0, leftWidth/40));
+        
+        labelGrid.getChildren().addAll(wavelengthValueLabel, distanceAWValueLabel,
+                distanceASValueLabel, sourceIntensityValueLabel);
+        
+        
+        
+        
 
         // Setting the size of the sliders'
         wavelength.setPrefSize(2 * leftWidth / 3, height / 2 / 4);
@@ -143,7 +161,7 @@ public class Main extends Application {
                 distanceASLabel, sourceIntensityLabel, setupCheckBox, 
                 reversedCheckBox, modeComboBox, generateImageButton);
         
-        
+        stackpane.getChildren().addAll(labelGrid, leftBox);
         //Setting up the VBox on the right side of the screen
         int rightWidth = 3 * width / 4;
         BorderPane mainPane = new BorderPane();
@@ -163,7 +181,7 @@ public class Main extends Application {
         
         //Adding all the layotus to the VBox on the right
         mainPane.setTop(topBox);
-        mainPane.setLeft(leftBox);
+        mainPane.setLeft(stackpane);
         mainPane.setCenter(centerBox);
 
         Scene scene = new Scene(mainPane, width, height);
