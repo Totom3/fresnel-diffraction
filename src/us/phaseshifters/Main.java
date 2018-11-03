@@ -3,6 +3,9 @@ package us.phaseshifters;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -12,6 +15,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -33,10 +38,23 @@ import javafx.stage.Stage;
  *
  * @author Totom3
  */
-public class Main extends Application {
+public class Main extends Application{
 
     int height;
     int width;
+    
+    public int wavelengthValue;
+    public double distanceAWValue;
+    public double distanceASValue;
+    public double sourceIntensityValue;
+    
+    public Label wavelengthValueLabel;
+    public Label distanceAWValueLabel;
+    public Label distanceASValueLabel;
+    public Label sourceIntensityValueLabel;
+    
+    public boolean reversed;
+    public boolean displaySetup;
 
     @Override
     public void start(Stage primaryStage) {
@@ -57,37 +75,87 @@ public class Main extends Application {
 
         //Creating all the sliders
         Slider wavelength = new Slider();
+        wavelength.setMin(380);
+        wavelength.setMax(780);
         Slider distanceAW = new Slider();
         Slider distanceAS = new Slider();
         Slider sourceIntensity = new Slider();
+        
+        
         
         //Creating a Stack Pane and a Grid Pane for real-time slider value update
         
         StackPane stackpane = new StackPane();
         GridPane labelGrid = new GridPane();
-        labelGrid.setVgap((height/2)/4);
+        labelGrid.setAlignment(Pos.TOP_LEFT);
+        labelGrid.setPrefSize(leftWidth, height);
+        labelGrid.setHgap(0);
+        labelGrid.setVgap((height / 2) / 8);
         
-        Label wavelengthValueLabel = new Label();
-        wavelengthValueLabel.setText(String.valueOf(wavelength.getValue()));
-        Label distanceAWValueLabel = new Label(String.valueOf(distanceAW.getValue()));
-        Label distanceASValueLabel = new Label(String.valueOf(distanceAS.getValue()));
-        Label sourceIntensityValueLabel = new Label(String.valueOf(sourceIntensity.getValue()));
+        wavelengthValueLabel = new Label(String.valueOf(wavelengthValue) + " nm");
+        distanceAWValueLabel = new Label(String.valueOf(distanceAWValue) + " units");
+        distanceASValueLabel = new Label(String.valueOf(distanceASValue) + " units");
+        sourceIntensityValueLabel = new Label(String.valueOf(sourceIntensityValue) + " units");
         
         GridPane.setConstraints(wavelengthValueLabel, 1, 0);
         GridPane.setConstraints(distanceAWValueLabel, 1, 1);
         GridPane.setConstraints(distanceASValueLabel, 1, 2);
         GridPane.setConstraints(sourceIntensityValueLabel, 1, 3);
         
-        GridPane.setMargin(wavelengthValueLabel, new Insets(height/40, 0, 0, leftWidth/40));
-        GridPane.setMargin(distanceAWValueLabel, new Insets(height/40, 0, 0, leftWidth/40));
-        GridPane.setMargin(distanceASValueLabel, new Insets(height/40, 0, 0, leftWidth/40));
-        GridPane.setMargin(sourceIntensityValueLabel, new Insets(height/40, 0, 0, leftWidth/40));
+        GridPane.setMargin(wavelengthValueLabel, new Insets(height/40 + height/45, 0, 0, leftWidth/40  + leftWidth/1.5));
+        GridPane.setMargin(distanceAWValueLabel, new Insets(height/40, 0, 0, leftWidth/40 + leftWidth/1.5));
+        GridPane.setMargin(distanceASValueLabel, new Insets(height/40, 0, 0, leftWidth/40  + leftWidth/1.5));
+        GridPane.setMargin(sourceIntensityValueLabel, new Insets(height/40, 0, 0, leftWidth/40 + leftWidth/1.5));
         
         labelGrid.getChildren().addAll(wavelengthValueLabel, distanceAWValueLabel,
                 distanceASValueLabel, sourceIntensityValueLabel);
         
         
+        //Adding listeners on change to the sliders
         
+        wavelength.valueProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+                
+               wavelengthValue = (int) wavelength.getValue();
+               wavelengthValueLabel.setText(String.valueOf(wavelengthValue) + " nm");
+                
+            }
+        });
+        
+        distanceAW.valueProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+                
+                distanceAWValue = distanceAW.getValue();
+                distanceAWValueLabel.setText(String.format("%.2f", distanceAWValue) + " units");
+                
+            }
+        });
+        
+        distanceAS.valueProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+                
+                distanceASValue = distanceAS.getValue();
+                distanceASValueLabel.setText(String.format("%.2f", distanceASValue) + " units");
+                
+            }
+        });
+        
+        sourceIntensity.valueProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+                
+                sourceIntensityValue = sourceIntensity.getValue();
+                sourceIntensityValueLabel.setText(String.format("%.2f", sourceIntensityValue) + " units");
+                
+            }
+        });
         
 
         // Setting the size of the sliders'
@@ -119,6 +187,9 @@ public class Main extends Application {
         modeComboBox.setMinHeight(height/16);
         generateImageButton.setPrefSize(leftWidth, height / 2 / 4);
         generateImageButton.setMinHeight(height/8);
+        
+        
+        
 
         //Setting the width of the first column to 1/3 of the VBox size and the second column to be 2/3
 
@@ -127,9 +198,9 @@ public class Main extends Application {
         GridPane.setConstraints(distanceAS, 1, 2);
         GridPane.setConstraints(sourceIntensity, 1, 3);
         
-        GridPane.setConstraints(distanceAWLabel, 0, 0);
-        GridPane.setConstraints(distanceASLabel, 0, 1);
-        GridPane.setConstraints(wavelengthLabel, 0, 2);
+        GridPane.setConstraints(wavelengthLabel, 0, 0);
+        GridPane.setConstraints(distanceAWLabel, 0, 1);
+        GridPane.setConstraints(distanceASLabel, 0, 2);
         GridPane.setConstraints(sourceIntensityLabel, 0, 3);
         
         GridPane.setConstraints(setupCheckBox, 0, 4, 2, 1);
@@ -137,9 +208,9 @@ public class Main extends Application {
         GridPane.setConstraints(modeComboBox, 0, 6, 2, 1);
         GridPane.setConstraints(generateImageButton, 0, 7, 2, 1);
         
+        GridPane.setMargin(distanceASLabel, new Insets(height/40, 0, 0, leftWidth/40));
         GridPane.setMargin(wavelengthLabel, new Insets(height/40, 0, 0, leftWidth/40));
         GridPane.setMargin(distanceAWLabel, new Insets(height/40, 0, 0, leftWidth/40));
-        GridPane.setMargin(distanceASLabel, new Insets(height/40, 0, 0, leftWidth/40));
         GridPane.setMargin(sourceIntensityLabel, new Insets(height/40, 0, 0, leftWidth/40));
         
         GridPane.setMargin(wavelength, new Insets(height/40, leftWidth/40, 0, 0));
@@ -170,6 +241,24 @@ public class Main extends Application {
         centerBox.setPrefSize(rightWidth, height);
         centerBox.setAlignment(Pos.BOTTOM_CENTER);
         centerBox.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+        
+        //Setting up CheckBox listeners
+        setupCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
+                        if(setupCheckBox.isSelected()){
+                            //centerBox.getChildren().remove(the display setup thing)
+                        }else{
+                            //centerBox.getChildren().add(0, the display setup thing);
+                        }
+                }
+            });
+        
+        reversedCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
+                      reversed = reversedCheckBox.isSelected();
+                      System.out.println(reversed);
+                }
+            });
 
         // Top box
         VBox topBox = new VBox();
@@ -186,6 +275,17 @@ public class Main extends Application {
 
         Scene scene = new Scene(mainPane, width, height);
 
+        
+        
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode() == KeyCode.ESCAPE){
+                    System.exit(0);
+                }
+            }
+        });
+        
         primaryStage.setTitle("Hackathon 2018");
         primaryStage.setScene(scene);
         primaryStage.setFullScreen(true);
