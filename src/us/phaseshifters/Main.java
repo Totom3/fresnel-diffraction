@@ -8,15 +8,23 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 /**
@@ -24,143 +32,153 @@ import javafx.stage.Stage;
  * @author Totom3
  */
 public class Main extends Application {
-    
+
     int height;
     int width;
-	
-	@Override
-	public void start(Stage primaryStage) {
-            
-            //Getting the screens size
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            height = screenSize.height;
-            width = screenSize.width;
-	
-            //Setting up the VBox on the left side of the screen
-            VBox vbox = new VBox();
-            int leftWidth = width/4;
-            vbox.setAlignment(Pos.CENTER_LEFT);
-            vbox.setPrefSize(height, leftWidth);
 
-            //Creating a grid pane for the sliders
-            GridPane sliderGrid = new GridPane();
-            sliderGrid.setAlignment(Pos.TOP_CENTER);
-            sliderGrid.setHgap(leftWidth/4);
-            sliderGrid.setVgap((height/2)/8);
-            
-            //Creating all the sliders
-            Slider wavelength = new Slider();
-            wavelength.setPrefSize(2*leftWidth/3, height/2/4);
-            
-            Slider distanceAW = new Slider();
-            distanceAW.setPrefSize(2*leftWidth/3, height/2/4);
-            
-            Slider distanceAS = new Slider();
-            distanceAS.setPrefSize(2*leftWidth/3, height/2/4);
-            
-            Slider sourceIntensity = new Slider();
-            sourceIntensity.setPrefSize(2*leftWidth/3, height/2/4);
-            
-            //Creating all the labels
-            Label wavelengthLabel = new Label("Wavelength");
-            Label distanceAWLabel = new Label("Distance Aperture - Wall");
-            Label distanceASLabel = new Label("Distance Aperture - Source");
-            Label sourceIntensityLabel = new Label("Source Intensity");
-            
-            //Setting the width of the first column to 1/3 of the VBox size and the second column to be 2/3
-           
-           
-            
-            //1st row
-            sliderGrid.setConstraints(wavelengthLabel, 0, 0);
-            sliderGrid.setConstraints(wavelength, 1, 0);
-            //2nd row
-            sliderGrid.setConstraints(distanceAWLabel, 0, 1);
-            sliderGrid.setConstraints(distanceAW, 1, 1);
-            //3rd row
-            sliderGrid.setConstraints(distanceASLabel, 0, 2);
-            sliderGrid.setConstraints(distanceAS, 1, 2);
-            //4th row
-            sliderGrid.setConstraints(wavelengthLabel, 0, 3);
-            sliderGrid.setConstraints(sourceIntensity, 1, 3);
+    @Override
+    public void start(Stage primaryStage) {
 
-            //Adding all the elements to the silder grid
-            sliderGrid.getChildren().addAll(wavelength, distanceAW, distanceAS,
-                    sourceIntensity,wavelengthLabel, distanceAWLabel,
-                    distanceASLabel, sourceIntensityLabel);
-            //Adding the slider grid to the left VBox
-            vbox.getChildren().add(sliderGrid);
-            
-            //Creating the layout for the buttons (goes under the slider grid)
-            VBox buttonBox = new VBox(height/2/4/6);
-            
-            //Creating the buttons and the check box and setting their size
-            CheckBox setupCheckBox = new CheckBox("Display the setup?");
-            setupCheckBox.setPrefSize(leftWidth, height/2/4);
-            
-            Button apertureButton = new Button("Aperture");
-            apertureButton.setPrefSize(leftWidth, height/2/4);
-            
-            Button modeButton = new Button("Mode");
-            modeButton.setPrefSize(leftWidth, height/2/4);
-            
-            Button generateImageButton = new Button("Generate Image");
-            generateImageButton.setPrefSize(leftWidth, height/2/4);
-            
-            buttonBox.getChildren().addAll(setupCheckBox, 
-                    apertureButton, modeButton, generateImageButton);
-            
-            //Adding the button box to the left VBox
-            vbox.getChildren().add(buttonBox);
-            
-            
-            //Setting up the VBox on the right side of the screen
-            int rightWidth = width - width/3;
-            VBox displayBox = new VBox(height/3/4);
-            displayBox.setAlignment(Pos.CENTER_RIGHT);
-            displayBox.setPrefSize(height, rightWidth);
-            
-            //Creating two Vbox inside the Vbox on the right side of the screen
-            //and a StackPane for the sub title
-            VBox rightUpBox = new VBox();
-            rightUpBox.setAlignment(Pos.CENTER);
-            VBox rightDownBox = new VBox();
-            rightDownBox.setAlignment(Pos.BOTTOM_CENTER);
-            StackPane subtitlePane = new StackPane();
-            subtitlePane.setAlignment(Pos.TOP_CENTER);
-            
-            
-            //Adding the sub-title to the subtitle stack pane
-            Font subtitleFont = new Font("Arial", 24);    
-            Text subtitle = new Text("Sub-Title"); //Temporarly Hard-Coded
-            subtitle.setFont(subtitleFont);
-            subtitlePane.getChildren().add(subtitle);
-            
-            //Temporarly adding the subtitle to the display boxes(up and down) to visualize
-            rightUpBox.getChildren().add(subtitle);
-            rightDownBox.getChildren().add(subtitle);
-            
-            //Adding all the layotus to the VBox on the right
-            displayBox.getChildren().addAll(rightUpBox, rightDownBox, subtitlePane);
-            
-            //Creating the horizontal box (main layout) it will contain both the 
-            //left and the right Vbox
-            HBox layout = new HBox();
-            layout.getChildren().addAll(vbox, displayBox);
-            
-            Scene scene = new Scene(layout, width, height);
-            
-            primaryStage.setTitle("Hackathon 2018");
-            primaryStage.setScene(scene);
-            primaryStage.setFullScreen(true);
-            primaryStage.show();
-	}
+        //Getting the screens size
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        height = screenSize.height;
+        width = screenSize.width;
 
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args) {
-		launch(args);
-	}
-	
+        //Setting up the VBox on the left side of the screen
+        GridPane leftBox = new GridPane();
+
+        int leftWidth = width / 4;
+        leftBox.setAlignment(Pos.CENTER_LEFT);
+        leftBox.setPrefSize(leftWidth, height);
+        leftBox.setHgap(0);
+        leftBox.setVgap((height / 2) / 8);
+
+        
+        //Creating a Stack Pane and a Grid Pane for real-time slider value update
+        
+        StackPane stackpane = new StackPane();
+        GridPane labelGrid = new GridPane();
+        
+        Label wavelengthValueLabel = new Label();
+        Label distanceAWValueLabel = new Label();
+        Label distanceASValueLabel = new Label();
+        Label sourceIntensityValueLabel = new Label();
+        
+        
+        stackpane.getChildren().add(labelGrid);
+        //Creating all the sliders
+        Slider wavelength = new Slider();
+        Slider distanceAW = new Slider();
+        Slider distanceAS = new Slider();
+        Slider sourceIntensity = new Slider();
+
+        // Setting the size of the sliders'
+        wavelength.setPrefSize(2 * leftWidth / 3, height / 2 / 4);
+        distanceAW.setPrefSize(2 * leftWidth / 3, height / 2 / 4);
+        distanceAS.setPrefSize(2 * leftWidth / 3, height / 2 / 4);
+        sourceIntensity.setPrefSize(2 * leftWidth / 3, height / 2 / 4);
+
+        //Creating all the labels
+        Label wavelengthLabel = new Label("Wavelength");
+        wavelengthLabel.setMinWidth(leftWidth / 2);
+        Label distanceAWLabel = new Label("Distance Aperture - Wall");
+        distanceAWLabel.setMinWidth(leftWidth / 2);
+        Label distanceASLabel = new Label("Distance Aperture - Source");
+        distanceASLabel.setMinWidth(leftWidth / 2);
+        Label sourceIntensityLabel = new Label("Source Intensity");
+        sourceIntensityLabel.setMinWidth(leftWidth / 2);
+
+        // Create check boxes, combo box and button
+        CheckBox setupCheckBox = new CheckBox("Display Setup");
+        CheckBox reversedCheckBox = new CheckBox("Reversed");
+        ComboBox modeComboBox = new ComboBox(); 
+        Button generateImageButton = new Button("Generate Image");
+
+        modeComboBox.setPlaceholder(new Label("Aperture Type"));
+        setupCheckBox.setPrefSize(leftWidth, height / 2 / 4);
+        reversedCheckBox.setPrefSize(leftWidth, height / 2 / 4);
+        modeComboBox.setPrefSize(leftWidth, height / 2 / 4);
+        modeComboBox.setMinHeight(height/16);
+        generateImageButton.setPrefSize(leftWidth, height / 2 / 4);
+        generateImageButton.setMinHeight(height/8);
+
+        //Setting the width of the first column to 1/3 of the VBox size and the second column to be 2/3
+
+        GridPane.setConstraints(wavelength, 1, 0);
+        GridPane.setConstraints(distanceAW, 1, 1);
+        GridPane.setConstraints(distanceAS, 1, 2);
+        GridPane.setConstraints(sourceIntensity, 1, 3);
+        
+        GridPane.setConstraints(distanceAWLabel, 0, 0);
+        GridPane.setConstraints(distanceASLabel, 0, 1);
+        GridPane.setConstraints(wavelengthLabel, 0, 2);
+        GridPane.setConstraints(sourceIntensityLabel, 0, 3);
+        
+        GridPane.setConstraints(setupCheckBox, 0, 4, 2, 1);
+        GridPane.setConstraints(reversedCheckBox, 0, 5, 2, 1);
+        GridPane.setConstraints(modeComboBox, 0, 6, 2, 1);
+        GridPane.setConstraints(generateImageButton, 0, 7, 2, 1);
+        
+        GridPane.setMargin(wavelengthLabel, new Insets(height/40, 0, 0, leftWidth/40));
+        GridPane.setMargin(distanceAWLabel, new Insets(height/40, 0, 0, leftWidth/40));
+        GridPane.setMargin(distanceASLabel, new Insets(height/40, 0, 0, leftWidth/40));
+        GridPane.setMargin(sourceIntensityLabel, new Insets(height/40, 0, 0, leftWidth/40));
+        
+        GridPane.setMargin(wavelength, new Insets(height/40, leftWidth/40, 0, 0));
+        GridPane.setMargin(distanceAW, new Insets(height/40, leftWidth/40, 0, 0));
+        GridPane.setMargin(distanceAS, new Insets(height/40, leftWidth/40, 0, 0));
+        GridPane.setMargin(sourceIntensity, new Insets(height/40, leftWidth/40, 0,0));
+        
+        GridPane.setMargin(setupCheckBox, new Insets(0, leftWidth/3 - leftWidth/40, 0, leftWidth/4 - leftWidth/40));
+        GridPane.setMargin(reversedCheckBox, new Insets(0, leftWidth/3 - leftWidth/40, 0, leftWidth/4 - leftWidth/40));
+        GridPane.setMargin(modeComboBox, new Insets(0, leftWidth/40, height/16, leftWidth/40));
+        GridPane.setMargin(generateImageButton, new Insets(0, leftWidth/40, height/16, leftWidth/40));
+        
+        
+        
+
+        //Adding all the elements to the silder grid
+        leftBox.getChildren().addAll(wavelength, distanceAW, distanceAS,
+                sourceIntensity, wavelengthLabel, distanceAWLabel,
+                distanceASLabel, sourceIntensityLabel, setupCheckBox, 
+                reversedCheckBox, modeComboBox, generateImageButton);
+        
+        
+        //Setting up the VBox on the right side of the screen
+        int rightWidth = 3 * width / 4;
+        BorderPane mainPane = new BorderPane();
+        
+        VBox centerBox = new VBox();
+        centerBox.setPrefSize(rightWidth, height);
+        centerBox.setAlignment(Pos.BOTTOM_CENTER);
+        centerBox.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        // Top box
+        VBox topBox = new VBox();
+        Font subtitleFont = new Font("Arial",24);
+        Text subtitle = new Text("Fresnel Diffraction Simulator"); //Temporarily Hard-Coded
+        subtitle.setFont(subtitleFont);
+        subtitle.setTextAlignment(TextAlignment.CENTER);
+        topBox.getChildren().add(subtitle);
+        
+        //Adding all the layotus to the VBox on the right
+        mainPane.setTop(topBox);
+        mainPane.setLeft(leftBox);
+        mainPane.setCenter(centerBox);
+
+        Scene scene = new Scene(mainPane, width, height);
+
+        primaryStage.setTitle("Hackathon 2018");
+        primaryStage.setScene(scene);
+        primaryStage.setFullScreen(true);
+        primaryStage.show();
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
+
 }
