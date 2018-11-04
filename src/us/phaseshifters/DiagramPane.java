@@ -20,18 +20,21 @@ public class DiagramPane extends Pane {
 
     private Canvas diagram;
 
+    public int height;
+    public int width;
     public DiagramPane() {
         this.diagram = new Canvas();
         getChildren().add(diagram);
     }
 
-    public void drawCanvas(double wavelength, boolean reverse, double SA, ExperimentType preset, double sourceXStart) {
+    public void drawCanvas(double wavelength, boolean reverse, double SA, 
+            ExperimentType preset, double sourceXStart, int height, int width) {
 
-        int width = (int) getWidth();
-        int height = (int) getHeight();
+        this.width = width;
+        this.height = height;
+        System.out.println(width + " " + height);
         diagram.setWidth(width);
         diagram.setHeight(height);
-        System.out.println(width + " " + height);
 
         //Setting Background
         GraphicsContext gc = diagram.getGraphicsContext2D();
@@ -40,58 +43,58 @@ public class DiagramPane extends Pane {
 
         //Drawing Lightbulb
         Image lightBulb = new Image("assets/LightIcon.png");
-        gc.drawImage(lightBulb, sourceXStart, getHeight() / 2.8);
+        gc.drawImage(lightBulb, sourceXStart, height / 2.8);
 
         //Drawing Wall 
         gc.setFill(Color.BLACK);
-        gc.fillRect(getWidth() - getWidth() / 100 - 10, 0, getWidth() / 100, getHeight());
+        gc.fillRect(width - width / 100 - 10, 0, width / 100, height);
 
         if (preset.equals(ExperimentType.DOUBLE_SLIT)) {
             drawDoubleSlit(sourceXStart, SA, gc);
             //Aperture Text
             gc.setFont(new Font("Impact", 16));
-            gc.fillText("Aperture", SA - getWidth() / 8, getHeight() - getHeight() / 15);
+            gc.fillText("Aperture", SA - width / 8, height - height / 15);
         } else if (preset.equals(ExperimentType.SINGLE_SLIT) || reverse && preset.equals(ExperimentType.OBJECT)) {
             drawHoleObject(sourceXStart, SA, gc);
             //Aperture Text
             gc.setFont(new Font("Impact", 16));
-            gc.fillText("Aperture", SA - getWidth() / 8, getHeight() - getHeight() / 15);
+            gc.fillText("Aperture", SA - width / 8, height - height / 15);
         } else {
             drawObject(sourceXStart, SA, gc);
             //Aperture Text
             gc.setFont(new Font("Impact", 16));
-            gc.fillText("Aperture", SA - getWidth() / 8, getHeight()/2);
+            gc.fillText("Aperture", SA - width / 8, height/2);
         }
 
         //Source Text
         gc.setFont(new Font("Impact", 16));
-        gc.fillText("Source", lightBulb.getWidth() / 3.5, getHeight() / 2.8 + lightBulb.getHeight() + 5);
+        gc.fillText("Source", lightBulb.getWidth() / 3.5, height / 2.8 + lightBulb.getHeight() + 5);
 
         //Wall Text
         gc.setFont(new Font("Impact", 16));
-        gc.fillText("Wall", getWidth() - getWidth() / 10, getHeight() - getHeight() / 15);
+        gc.fillText("Wall", width - width / 10, height - height / 15);
 
     }
 
     public void drawObject(double sourceXStart, double SA, GraphicsContext gc) {
         gc.setFill(Color.BLACK);
-        gc.fillRect(sourceXStart + SA, getHeight() / 4.0, getWidth() / 100, getHeight() / 2.5);
+        gc.fillRect(sourceXStart + SA, height / 4.0, width / 100, height / 2.5);
     }
 
     public void drawHoleObject(double sourceXStart, double SA, GraphicsContext gc) {
         gc.setFill(Color.BLACK);
-        gc.fillRect(sourceXStart + SA, 0, getWidth() / 100, getHeight() / 2.1);
+        gc.fillRect(sourceXStart + SA, 0, width / 100, height / 2.1);
         gc.setFill(Color.BLACK);
-        gc.fillRect(sourceXStart + SA, (getHeight() - (getHeight() / 2.1)), getWidth() / 100, getHeight() / 2.1);
+        gc.fillRect(sourceXStart + SA, (height - (height / 2.1)), width / 100, height / 2.1);
     }
 
     public void drawDoubleSlit(double sourceXStart, double SA, GraphicsContext gc) {
         gc.setFill(Color.BLACK);
-        gc.fillRect(sourceXStart + SA, 0, getWidth() / 100, getHeight() / 2.5);
+        gc.fillRect(sourceXStart + SA, 0, width / 100, height / 2.5);
         gc.setFill(Color.BLACK);
-        gc.fillRect(sourceXStart + SA, getHeight() / 2 - getHeight() / 20, getWidth() / 100, getHeight() / 10);
+        gc.fillRect(sourceXStart + SA, height / 2 - height / 20, width / 100, height / 10);
         gc.setFill(Color.BLACK);
-        gc.fillRect(sourceXStart + SA, (getHeight() - (getHeight() / 2.5)), getWidth() / 100, getHeight() / 2.5);
+        gc.fillRect(sourceXStart + SA, (height - (height / 2.5)), width / 100, height / 2.5);
     }
 
     public Color wavelenghtToColor(double wavelength) {
@@ -148,8 +151,6 @@ public class DiagramPane extends Pane {
         rgb[0] = Red == 0.0 ? 0 : (int) Math.round(intensityMax * Math.pow(Red * factor, gamma));
         rgb[1] = Green == 0.0 ? 0 : (int) Math.round(intensityMax * Math.pow(Green * factor, gamma));
         rgb[2] = Blue == 0.0 ? 0 : (int) Math.round(intensityMax * Math.pow(Blue * factor, gamma));
-
-        System.out.println(rgb[0] + " " + rgb[1] + " " + rgb[2]);
 
         return Color.rgb(rgb[0], rgb[1], rgb[2]);
     }
