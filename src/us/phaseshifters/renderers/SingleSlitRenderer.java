@@ -5,8 +5,10 @@
  */
 package us.phaseshifters.renderers;
 
-import static java.lang.Math.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -15,58 +17,67 @@ import javafx.scene.paint.Color;
  *
  * @author Administrator
  */
-public class SingleSlitRenderer implements DiffractionRenderer{
+public class SingleSlitRenderer implements DiffractionRenderer {
 
-    
-    private final double PI = Math.PI;
-    private final int wavelength = 500;
-    private final double intensity = 250;
-    private final double distanceAW = 1;
-    private double slitWidth = 1;
-    @Override
-    public void render(Canvas canvas, DiffractionParameters params, int size, int resolution) {
-        
-        //Will contain intensity 
-        ArrayList<Double> doubleList = new ArrayList();
-        
-        //Finding the intensity for half the x
-        for (int i = 0; i < size/2; i += resolution) {
-            doubleList.add(getIntensity(i));
-        }
-        for (int j = size/2; j < 0; j--) {
-            doubleList.add(doubleList.get(j));
-        }
-        
-        for (int i = 0; i < 10; i++) {
-            
-        }
-        
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        Color color = wavelengthToColor(params.getWavelength());
-        
-        for (int i = 0; i < size; i += resolution) {
-            
-            double calculatedIntensity = getIntensity(i);
-            calculatedIntensity = Math.max(0, Math.min(255, calculatedIntensity));
-            
-            for (int j = 0; j < size; j += resolution) {
-                double brightness = Color.grayRgb((int) calculatedIntensity).getBrightness();
-                gc.setFill(Color.hsb(color.getHue(), color.getSaturation(), brightness));
-                gc.fillOval(i, j, resolution, resolution);
-            }
-            
-        }  
-    }
-    
-    public double getIntensity(double x){
-        
-        double sinAngle = x/(sqrt(x * x + distanceAW * distanceAW));
-        double denominator = ((PI*slitWidth * sinAngle) / wavelength);
-        double numerator = Math.sin(denominator);
-        
-        System.out.println(intensity * Math.pow((numerator/denominator), 2));
-        return intensity * Math.pow((numerator/denominator), 2);
-        
-    }
-    
+	private static final double WIDTH = 0.00001;
+
+	@Override
+	public void render(Canvas canvas, DiffractionParameters params, int size, int resolution) {
+		final int samplesCount = size / resolution / 2;
+		double probabilities[] = new double[samplesCount];
+
+		int shift = size / 2;
+		double max = 0;
+		for (int i = 0; i < samplesCount; ++i) {
+			double x = ((i * resolution) - shift) / 300.0;
+			double intensity = getIntensity(x, params);
+
+			probabilities[i] = intensity;
+			System.out.println(i + "\t" + intensity);
+			if (intensity > max) {
+				max = intensity;
+			}
+		}
+
+		double median = median(probabilities);
+
+		GraphicsContext gc = canvas.getGraphicsContext2D();
+		Color color = wavelengthToColor(params.getWavelength());
+
+		double correctionFactor = (255.0 - 40.0) / (max - median);
+		for (int i = 0; i < samplesCount; ++i) {
+			double intensity = probabilities[i];
+
+			intensity = correctionFactor * (intensity - median) + 40;
+			intensity = Math.pow(intensity, params.getIntensity());
+
+			intensity = Math.max(0, Math.min(255, intensity));
+
+			gc.setFill(Color.grayRgb((int) intensity));
+			gc.fillRect(i * resolution, 0, resolution, size);
+			gc.fillRect(size - 1 - i * resolution - resolution, 0, resolution, size);
+
+		}
+	}
+
+	private double median(double[] array) {
+		List<Double> list = new ArrayList<>();
+		for (double d : array) {
+			list.add(d);
+		}
+
+		Collections.sort(list);
+		return list.get(list.size() / 2);
+	}
+
+	public double getIntensity(double x, DiffractionParameters params) {
+
+		double sinAngle = x / (Math.sqrt((x * x) + (params.getDistanceAW() * params.getDistanceAW())));
+		double denominator = (1_000_000_000 * (Math.PI * WIDTH * sinAngle) / params.getWavelength());
+		double numerator = Math.sin(denominator);
+
+		return params.getIntensity() * (numerator * numerator) / (denominator * denominator);
+
+	}
+
 }

@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import us.phaseshifters.renderers.DiffractionParameters;
-import us.phaseshifters.renderers.PolygonRenderer;
 import us.phaseshifters.renderers.SingleSlitRenderer;
 
 
@@ -17,7 +16,7 @@ public class RendererMain extends Application {
 	@Override
 	public void start(Stage stage) {
 		DiffractionScreenPane pane = new DiffractionScreenPane();
-		DiffractionParameters params = new DiffractionParameters(500.0, 1, 1, 1, true);
+		DiffractionParameters params = new DiffractionParameters(500.0, 1, 2, 1.2, true);
 
 		Scene scene = new Scene(pane, 600, 600);
 		stage.setTitle("Diffraction Renderer");
