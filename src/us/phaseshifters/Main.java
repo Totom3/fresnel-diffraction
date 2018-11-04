@@ -46,10 +46,10 @@ public class Main extends Application {
     int height;
     int width;
 
-    public int wavelengthValue;
-    public double distanceASValue;
-    public double sourceIntensityValue;
-
+    public static int wavelengthValue;
+    public static double distanceASValue;
+    public static double sourceIntensityValue;
+    
     public Label wavelengthValueLabel;
     public Label distanceASValueLabel;
     public Label sourceIntensityValueLabel;
