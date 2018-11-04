@@ -2,12 +2,6 @@ package us.phaseshifters;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import us.phaseshifters.renderers.DiffractionParameters;
 import us.phaseshifters.renderers.PoissonSpotRenderer;
@@ -21,7 +15,6 @@ public class RendererMain extends Application {
 	@Override
 	public void start(Stage stage) {
 		DiffractionScreenPane pane = new DiffractionScreenPane();
-
 		DiffractionParameters params = new DiffractionParameters(500, 1, 1, 1);
 
 		Scene scene = new Scene(pane, 600, 600);

@@ -20,58 +20,55 @@ public class PoissonSpotRenderer implements DiffractionRenderer {
 		final double deltaTheta = 2 * Math.PI / thetaStepCount;
 		final double phasorMultiplier = 1_000_000_000 * (1 / params.getDistanceSA() + 1 / params.getDistanceAW()) * Math.PI / params.getWavelength();
 
-		final int bounds = size / 2;
-		final int effectiveSize = size / resolution;
-		final double[][] probabilities = new double[effectiveSize][effectiveSize];
+		final int shift = size / 2;
+		final double radiiStep = 1.0;
+		final int maxRadius = (int) (Math.sqrt(2) * size / resolution);
+		final int radiiCount = (int) (maxRadius / radiiStep);
+
+		final double[] probabilities = new double[radiiCount];
 
 		// Render each pixel on the screen
-		//double sum = 0;
 		double max = 0;
-		for (int i = 0; i < effectiveSize; ++i) {
-			for (int j = 0; j < effectiveSize; ++j) {
+		for (int i = 0; i < radiiCount; ++i) {
+			int x = (int) (i * radiiStep);
 
-				int x = (i * resolution) - bounds;
-				int y = (j * resolution) - bounds;
+			// Outer integral
+			ComplexNumber totalPhasor = outerIntegral(x, thetaStepCount, deltaTheta, phasorMultiplier, params);
 
-				// Outer integral
-				ComplexNumber totalPhasor = outerIntegral(x, y, thetaStepCount, deltaTheta, phasorMultiplier, params);
-
-				// Store result
-				double prob = totalPhasor.normSquared();
-				probabilities[i][j] = prob;
-				//sum += prob;
-				if (prob > max) {
-					max = prob;
-				}
+			// Store result
+			double prob = totalPhasor.normSquared();
+			probabilities[i] = prob;
+			if (prob > max) {
+				max = prob;
 			}
 		}
 
 		// TODO: rescale values appropriately
 		// Paint values
 		GraphicsContext graphics = canvas.getGraphicsContext2D();
-		for (int i = 0; i < effectiveSize; ++i) {
-			for (int j = 0; j < effectiveSize; ++j) {
-				int x = (i * resolution);
-				int y = (j * resolution);
+		for (int x = 0; x < size; x += resolution) {
+			for (int y = 0; y < size; y += resolution) {
+				int x1 = x - shift;
+				int y1 = y - shift;
+				int bin = (int) Math.round(Math.sqrt((double) ((x1 * x1) + (y1 * y1))) / radiiStep);
 
-				graphics.setFill(Color.gray(probabilities[i][j] / max));
+				graphics.setFill(Color.gray(probabilities[bin] / max));
 				graphics.fillRect(x, y, resolution, resolution);
 			}
 		}
 	}
 
-	private ComplexNumber outerIntegral(int x, int y, int thetaStepCount, double deltaTheta, double phasorMultiplier, DiffractionParameters params) {
+	private ComplexNumber outerIntegral(int r, int thetaStepCount, double deltaTheta, double phasorMultiplier, DiffractionParameters params) {
 		ComplexNumber totalPhasor = new ComplexNumber();
 
 		for (int t = 0; t < thetaStepCount; ++t) {
 			// Compute theta & friends
 			double theta = t * deltaTheta;
 			double cos = Math.cos(theta);
-			double sin = Math.sin(theta);
 
 			// Intermediary constants
-			double const1 = (x * cos) + (y * sin);
-			double const2 = (x * x) + (y * y) - (RADIUS_SQUARED);
+			double const1 = (r * cos);
+			double const2 = (r * r) - (RADIUS_SQUARED);
 			double discriminant = (const1 * const1) - const2;
 
 			// Check discriminant sign
