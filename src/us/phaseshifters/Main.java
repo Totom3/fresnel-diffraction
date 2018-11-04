@@ -127,7 +127,13 @@ public class Main extends Application {
         CheckBox setupCheckBox = new CheckBox("Display Setup");
         setupCheckBox.fire();
         CheckBox reversedCheckBox = new CheckBox("Reversed");
+        String[] stringArray = {
+            "Custom Aperture", "Single-Slit", "Double - Slit"
+        };
+        
         ComboBox modeComboBox = new ComboBox();
+        modeComboBox.getItems().addAll(stringArray);
+        modeComboBox.setValue(stringArray[0]);
         Button generateImageButton = new Button("Generate Image");
 
         modeComboBox.setPlaceholder(new Label("Aperture Type"));
