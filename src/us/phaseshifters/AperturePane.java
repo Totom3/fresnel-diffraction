@@ -17,17 +17,17 @@ public class AperturePane extends Pane {
 	private List<Vec2D> pointList;
 	private boolean connected;
 
-	public AperturePane() {
-		this.canvas = new Canvas(400, 400);
+	public AperturePane(int width, int height) {
+		this.canvas = new Canvas(width, height);
 		this.pointList = new ArrayList<>();
 
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		gc.setFill(Main.reversed ? Color.BLACK : Color.WHITE);
 
-		gc.fillRect(0, 0, 400, 400);
+		gc.fillRect(0, 0, width, height);
 		getChildren().add(canvas);
 
-		this.setOnMouseReleased(e -> {
+		setOnMouseReleased(e -> {
 			pointList.add(new Vec2D((int) e.getX(), (int) e.getY()));
 			drawCanvas();
 		});

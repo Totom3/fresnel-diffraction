@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import us.phaseshifters.renderers.DiffractionParameters;
 import us.phaseshifters.renderers.PolygonRenderer;
+import us.phaseshifters.renderers.SingleSlitRenderer;
 
 
 /**
@@ -24,7 +25,7 @@ public class RendererMain extends Application {
 		stage.show();
 
 		System.out.println("Rendering...");
-		pane.drawCanvas(params, new PolygonRenderer(PolygonRenderer.SAMPLE_POINTS));
+		pane.drawCanvas(params,new SingleSlitRenderer());
 		System.out.println("Finished rendering!");
 	}
 

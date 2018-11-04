@@ -179,7 +179,9 @@ public class Main extends Application {
 		centerBox.setPrefSize(rightWidth, height);
 		centerBox.setAlignment(Pos.TOP_CENTER);
 		DiagramPane diaPane = new DiagramPane();
+                AperturePane aperture = new AperturePane((int) centerBox.getPrefWidth(), (int) centerBox.getPrefHeight());
 		centerBox.getChildren().add(0, diaPane);
+                centerBox.getChildren().add(1, aperture);
 
 		//Setting up CheckBox listeners
 		setupCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -222,6 +224,40 @@ public class Main extends Application {
 		mainPane.setCenter(centerBox);
 
 		Scene scene = new Scene(mainPane, width, height);
+                
+                
+                
+                scene.setOnKeyReleased(e -> {
+			List<Vec2D> points = aperture.getPoints();
+			GraphicsContext gc = aperture.getCanvas().getGraphicsContext2D();
+			if ((e.getCode() == KeyCode.ENTER) && (points.size() > 2)) {
+				Vec2D p1 = points.get(0);
+				Vec2D p2 = aperture.getPoints().get(aperture.getPoints().size() - 1);
+				gc.setLineWidth(5);
+
+				double[] xPoints = new double[points.size()];
+				double[] yPoints = new double[points.size()];
+				for (int i = 0; i < points.size(); i++) {
+					xPoints[i] = points.get(i).x;
+					yPoints[i] = points.get(i).y;
+				}
+				if (!reversed) {
+					gc.setFill(Color.WHITE);
+				} else {
+					gc.setFill(Color.BLACK);
+				}
+				gc.fillRect(0, 0, aperture.getWidth(), aperture.getHeight());
+				if (!reversed) {
+					gc.setFill(Color.BLACK);
+				} else {
+					gc.setFill(Color.WHITE);
+				}
+				gc.fillPolygon(xPoints, yPoints, xPoints.length);
+			}
+			if (e.getCode() == KeyCode.ESCAPE) {
+				System.exit(0);
+			}
+		});
 
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
@@ -274,52 +310,10 @@ public class Main extends Application {
 		primaryStage.setFullScreen(true);
 		primaryStage.show();
 		updateDiaPane(setupCheckBox, centerBox, diaPane);
-		startAperture();
 
 	}
 
 	//temporary method to start AperturePane
-	public void startAperture() {
-		Stage stage = new Stage();
-		AperturePane aperture = new AperturePane();
-		Scene scene = new Scene(aperture, 400, 400);
-
-		scene.setOnKeyReleased(e -> {
-			List<Vec2D> points = aperture.getPoints();
-			GraphicsContext gc = aperture.getCanvas().getGraphicsContext2D();
-			if ((e.getCode() == KeyCode.ENTER) && (points.size() > 2)) {
-				Vec2D p1 = points.get(0);
-				Vec2D p2 = aperture.getPoints().get(aperture.getPoints().size() - 1);
-				gc.setLineWidth(5);
-
-				double[] xPoints = new double[points.size()];
-				double[] yPoints = new double[points.size()];
-				for (int i = 0; i < points.size(); i++) {
-					xPoints[i] = points.get(i).x;
-					yPoints[i] = points.get(i).y;
-				}
-				if (!reversed) {
-					gc.setFill(Color.WHITE);
-				} else {
-					gc.setFill(Color.BLACK);
-				}
-				gc.fillRect(0, 0, 400, 400);
-				if (!reversed) {
-					gc.setFill(Color.BLACK);
-				} else {
-					gc.setFill(Color.WHITE);
-				}
-				gc.fillPolygon(xPoints, yPoints, xPoints.length);
-			}
-			if (e.getCode() == KeyCode.ESCAPE) {
-				System.exit(0);
-			}
-		});
-
-		stage.setScene(scene);
-		stage.show();
-
-	}
 
 	/**
 	 * @param args the command line arguments

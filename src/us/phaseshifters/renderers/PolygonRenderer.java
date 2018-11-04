@@ -53,7 +53,6 @@ public class PolygonRenderer implements DiffractionRenderer {
 				
 				double intensity = probabilities[x][y];
 				intensity = Math.max(0, Math.min(255, intensity));
-				
 				graphics.setFill(Color.grayRgb((int)intensity));
 				graphics.fillRect(x, y, resolution, resolution);
 			}
