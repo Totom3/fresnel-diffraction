@@ -16,7 +16,7 @@ public class RendererMain extends Application {
 	@Override
 	public void start(Stage stage) {
 		DiffractionScreenPane pane = new DiffractionScreenPane();
-		DiffractionParameters params = new DiffractionParameters(500, 1, 1, 1);
+		DiffractionParameters params = new DiffractionParameters(500.0, 1, 1, 1, true);
 
 		Scene scene = new Scene(pane, 600, 600);
 		stage.setTitle("Diffraction Renderer");
@@ -24,7 +24,7 @@ public class RendererMain extends Application {
 		stage.show();
 
 		System.out.println("Rendering...");
-		pane.drawCanvas(params, new SquareRenderer());
+		pane.drawCanvas(params, new PoissonSpotRenderer());
 		System.out.println("Finished rendering!");
 	}
 
