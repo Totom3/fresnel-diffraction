@@ -16,9 +16,9 @@ public class RendererMain extends Application {
 	@Override
 	public void start(Stage stage) {
 		DiffractionScreenPane pane = new DiffractionScreenPane();
-		DiffractionParameters params = new DiffractionParameters(500.0, 1, 2, 1.2, true);
+		DiffractionParameters params = new DiffractionParameters(500.0, 1, 2, 1.5, false);
 
-		Scene scene = new Scene(pane, 600, 600);
+		Scene scene = new Scene(pane, 500, 500);
 		stage.setTitle("Diffraction Renderer");
 		stage.setScene(scene);
 		stage.show();

@@ -47,7 +47,7 @@ public class PolygonRenderer implements DiffractionRenderer {
 				int x = shift - (i * resolution);
 				int y = shift - (j * resolution);
 
-				ComplexNumber totalPhasor = outerIntegral(x, y, thetaStepCount, deltaTheta, phasorMultiplier);
+				ComplexNumber totalPhasor = outerIntegral(x, y, thetaStepCount, deltaTheta, phasorMultiplier, params);
 				probabilities[i][j] = totalPhasor.normSquared();
 			}
 		}
@@ -64,21 +64,18 @@ public class PolygonRenderer implements DiffractionRenderer {
 				graphics.fillRect(x, y, resolution, resolution);
 			}
 		}
-
-		int i = size / 2;
-		for (int j = 0; j < steps; ++j) {
-			System.out.println(j + "\t" + probabilities[i][j]);
-		}
 	}
 
 	private static final double EPSILON = 0.0001;
 
-	private ComplexNumber outerIntegral(int x, int y, double thetaStepCount, double deltaTheta, double phasorMultiplier) {
+	private ComplexNumber outerIntegral(int x, int y, double thetaStepCount, double deltaTheta, double phasorMultiplier, DiffractionParameters params) {
+		final boolean reversed = params.isReversed();
+
 		ComplexNumber totalPhasor = new ComplexNumber();
 
 		boolean insidePolygon = false;
 		Vec2D phi = new Vec2D(x, y);
-		
+
 		for (int t = 0; t < thetaStepCount; ++t) {
 			double theta = t * deltaTheta;
 			double cos = Math.cos(theta);
@@ -123,19 +120,22 @@ public class PolygonRenderer implements DiffractionRenderer {
 					continue;
 				}
 
-				radii.add(numerator / denominator);
+				double r = numerator / denominator;
+				if (r >= 0) {
+					radii.add(numerator / denominator);
+				}
 			}
 
 			Collections.sort(radii);
 
 			if (t == 0) {
 				insidePolygon = radii.size() % 2 == 1;
-				if (insidePolygon) {
+				if (!(insidePolygon ^ reversed)) {
 					totalPhasor.real -= 1;
 				}
 			}
 
-			double sgn = insidePolygon ? 1 : -1;
+			double sgn = insidePolygon ^ reversed ? -1 : 1;
 			for (double radius : radii) {
 				totalPhasor = totalPhasor.plus(ComplexNumber.exp(radius * phasorMultiplier).scale(sgn));
 			}
