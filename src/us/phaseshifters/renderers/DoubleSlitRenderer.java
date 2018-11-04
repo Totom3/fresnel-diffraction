@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package us.phaseshifters.renderers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javafx.scene.canvas.Canvas;
@@ -17,9 +11,10 @@ import javafx.scene.paint.Color;
  *
  * @author Administrator
  */
-public class SingleSlitRenderer implements DiffractionRenderer {
+public class DoubleSlitRenderer implements DiffractionRenderer {
 
 	private static final double WIDTH = 0.00001;
+	private static final double DISTANCE = 0.0001;
 
 	@Override
 	public void render(Canvas canvas, DiffractionParameters params, int size, int resolution) {
@@ -72,10 +67,13 @@ public class SingleSlitRenderer implements DiffractionRenderer {
 	public double getIntensity(double x, DiffractionParameters params) {
 
 		double sinAngle = x / (Math.sqrt((x * x) + (params.getDistanceAW() * params.getDistanceAW())));
+		double temp = (1_000_000_000 * (Math.PI * DISTANCE * sinAngle) / params.getWavelength());
 		double denominator = (1_000_000_000 * (Math.PI * WIDTH * sinAngle) / params.getWavelength());
 		double numerator = Math.sin(denominator);
+		
+		double cos = Math.cos(temp);
 
-		return params.getIntensity() * (numerator * numerator) / (denominator * denominator);
+		return params.getIntensity() * (cos * cos) * (numerator * numerator) / (denominator * denominator);
 
 	}
 
