@@ -11,26 +11,26 @@ import javafx.beans.property.SimpleIntegerProperty;
  */
 public class DiffractionParameters {
 
-	private final IntegerProperty wavelength;
+	private final DoubleProperty wavelength;
 	private final DoubleProperty distanceSA;
 	private final DoubleProperty distanceAW;
 	private final DoubleProperty intensity;
 
-	public DiffractionParameters(int wavelength, double distanceSA, double distanceAW, double intensity) {
-		this(new SimpleIntegerProperty(wavelength),
+	public DiffractionParameters(double wavelength, double distanceSA, double distanceAW, double intensity) {
+		this(new SimpleDoubleProperty(wavelength),
 				new SimpleDoubleProperty(distanceSA),
 				new SimpleDoubleProperty(distanceAW),
 				new SimpleDoubleProperty(intensity));
 	}
 	
-	public DiffractionParameters(IntegerProperty wavelength, DoubleProperty distanceSA, DoubleProperty distanceAW, DoubleProperty intensity) {
+	public DiffractionParameters(SimpleDoubleProperty wavelength, DoubleProperty distanceSA, DoubleProperty distanceAW, DoubleProperty intensity) {
 		this.wavelength = wavelength;
 		this.distanceSA = distanceSA;
 		this.distanceAW = distanceAW;
 		this.intensity = intensity;
 	}
 
-	public int getWavelength() {
+	public double getWavelength() {
 		return wavelength.get();
 	}
 

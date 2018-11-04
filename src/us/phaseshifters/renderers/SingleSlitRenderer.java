@@ -13,14 +13,14 @@ import us.phaseshifters.ComplexNumber;
  */
 public class SingleSlitRenderer implements DiffractionRenderer {
 
-	public static final int WIDTH = 20;
-	public static final int HEIGHT = 600;
-	public static final int HALF_WIDTH = WIDTH / 2;
-	public static final int HALF_HEIGHT = HEIGHT / 2;
+	public static final double WIDTH = .1;
+	public static final double HALF_WIDTH = WIDTH / 2;
+
+	private static final int MAX_RADIUS = 2000;
 
 	@Override
 	public void render(Canvas canvas, DiffractionParameters params, int size, int resolution) {
-		final int thetaStepCount = 128;
+		final int thetaStepCount = 256;
 		final double deltaTheta = 2 * Math.PI / thetaStepCount;
 		final double phasorMultiplier = 1_000_000_000 * (1 / params.getDistanceSA() + 1 / params.getDistanceAW()) * Math.PI / params.getWavelength();
 
@@ -28,30 +28,28 @@ public class SingleSlitRenderer implements DiffractionRenderer {
 		double max = 0;
 		final int shift = size / 2;
 		final int binCount = size / resolution / 2;
-		double[][] probabilities = new double[binCount][binCount];
+		double[] probabilities = new double[binCount];
 
 		// Compute probabilities for each bin
 		for (int i = 0; i < binCount; ++i) {
-			for (int j = 0; j < binCount; ++j) {
 
-				int x = shift - (i * resolution);
-				int y = shift - (j * resolution);
-
-				ComplexNumber totalPhasor = outerIntegral(x, y, thetaStepCount, deltaTheta, phasorMultiplier, params);
-
-				double prob = totalPhasor.normSquared();
-				probabilities[i][j] = prob;
-				if (prob > max) {
-					max = prob;
-				} else if (prob < min) {
-					min = prob;
-				}
+			int x = 10 * (shift - (i * resolution));
+			ComplexNumber totalPhasor = outerIntegral(x, thetaStepCount, deltaTheta, phasorMultiplier, params);
+			totalPhasor = totalPhasor.scale(deltaTheta);
+			
+			double prob = totalPhasor.normSquared();
+			probabilities[i] = prob;
+			if (prob > max) {
+				max = prob;
+			} else if (prob < min) {
+				min = prob;
 			}
 		}
 
-		// Render each pixel
 		double lightShift = 255 - max;
-		double lightScale = -(1+(255/(min-max)));
+		double lightScale = -(1 + 255 / (min - max));
+
+		// Render each pixel
 		GraphicsContext graphics = canvas.getGraphicsContext2D();
 		for (int i = 0; i < binCount; ++i) {
 			for (int j = 0; j < binCount; ++j) {
@@ -61,9 +59,14 @@ public class SingleSlitRenderer implements DiffractionRenderer {
 				int x2 = size - 1 - x1 - resolution;
 				int y2 = size - 1 - y1 - resolution;
 
-				double intensity = probabilities[i][j];
+				double intensity = probabilities[i];
+				intensity *= 2;
+				
 				intensity += lightShift;
-				intensity *= lightScale;
+				intensity = lightScale * (intensity - 255) + intensity;
+				
+				intensity = Math.min(255, intensity);
+
 				graphics.setFill(Color.grayRgb((int) intensity));
 				graphics.fillRect(x1, y1, resolution, resolution);
 				graphics.fillRect(x1, y2, resolution, resolution);
@@ -72,20 +75,18 @@ public class SingleSlitRenderer implements DiffractionRenderer {
 			}
 		}
 
-		int i = binCount / 2;
-		for (int j = 0; j < binCount; ++j) {
-			System.out.println(j+"\t"+probabilities[i][j]);
+		for (int i = 0; i < binCount; ++i) {
+			System.out.println(i + "\t" + probabilities[i]);
 		}
 	}
 
-	private ComplexNumber outerIntegral(int x, int y, int thetaStepCount, double deltaTheta, double phasorMultiplier, DiffractionParameters params) {
+	private ComplexNumber outerIntegral(int x, int thetaStepCount, double deltaTheta, double phasorMultiplier, DiffractionParameters params) {
 		ComplexNumber totalPhasor = new ComplexNumber();
 
 		for (int t = 0; t < thetaStepCount; ++t) {
 			// Compute theta & friends
 			double theta = t * deltaTheta;
 			double cos = Math.cos(theta);
-			double sin = Math.sin(theta);
 
 			List<Double> r = new ArrayList<>(4);
 
@@ -96,35 +97,24 @@ public class SingleSlitRenderer implements DiffractionRenderer {
 				double r2 = (+HALF_WIDTH - x) / cos;
 
 				// Verify validity and add contributions
-				if (isRadiusValid(r2, sin, y, HALF_HEIGHT)) {
+				if (r2 >= 0 && r2 <= MAX_RADIUS) {
 					r.add(r2);
 				}
 
-				if (isRadiusValid(r1, sin, y, HALF_HEIGHT)) {
+				if (r1 >= 0 && r2 <= MAX_RADIUS) {
 					r.add(r1);
 				}
 			}
 
-			// Find intersections with horizontal edges
-			if (sin != 0) {
-				// Compute radii
-				double r3 = (-HALF_HEIGHT - y) / sin;
-				double r4 = (+HALF_HEIGHT - y) / sin;
-
-				// Verify validity and add contributions
-				if (isRadiusValid(r4, cos, x, HALF_WIDTH)) {
-					r.add(r4);
-				}
-
-				if (isRadiusValid(r3, cos, x, HALF_WIDTH)) {
-					r.add(r3);
-				}
-			}
-
 			// Add center contribution
-			if (Math.abs(x) < HALF_WIDTH && Math.abs(y) < HALF_HEIGHT) {
+			if (Math.abs(x) < HALF_WIDTH) {
+				// If the point is inside the slit
 				totalPhasor.real -= 1;
+				if (r.size() == 1) {
+					totalPhasor = totalPhasor.plus(ComplexNumber.exp(r.get(0) * phasorMultiplier));
+				}
 			} else if (r.size() == 2) {
+				// If the point is outside the slit
 				double x1 = r.get(0);
 				double x2 = r.get(1);
 
