@@ -80,7 +80,7 @@ public class Main extends Application {
         wavelength.setMax(780);
         Slider distanceAS = new Slider();
         distanceAS.setMin(200);
-        distanceAS.setMax(900);
+        distanceAS.setMax(700);
         Slider sourceIntensity = new Slider();
 
         //Creating a Stack Pane and a Grid Pane for real-time slider value update
