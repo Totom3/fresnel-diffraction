@@ -87,6 +87,8 @@ public class PoissonSpotRenderer implements DiffractionRenderer {
 			// Add contribution from the obstacle
 			if (r2 > 0) {
 				totalPhasor = totalPhasor.minus(ComplexNumber.exp(r2 * phasorMultiplier));
+			} else {
+				totalPhasor.real -= 1;
 			}
 
 			if (r1 >= 0) {

@@ -73,11 +73,6 @@ public class SquareRenderer implements DiffractionRenderer {
 				graphics.fillRect(x2, y2, resolution, resolution);
 			}
 		}
-
-		int i = binCount / 2;
-		for (int j = 0; j < binCount; ++j) {
-			System.out.println(j + "\t" + probabilities[i][j]);
-		}
 	}
 
 	private ComplexNumber outerIntegral(int x, int y, int thetaStepCount, double deltaTheta, double phasorMultiplier, DiffractionParameters params) {
