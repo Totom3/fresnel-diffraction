@@ -281,7 +281,12 @@ public class Main extends Application {
 
 		//Adding action to button
 		generateImageButton.setOnAction(e -> {
-			ImageDisplay image = new ImageDisplay(getRenderer(modeComboBox));
+			final DiffractionRenderer renderer = getRenderer(modeComboBox);
+			if (renderer instanceof PolygonRenderer) {
+				System.out.println("Points: "+aperture.pointList);
+			}
+			
+			ImageDisplay image = new ImageDisplay(renderer);
 			Stage secondaryStage = new Stage();
 			image.start(secondaryStage);
 

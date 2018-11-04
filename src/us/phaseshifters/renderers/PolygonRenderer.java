@@ -33,7 +33,7 @@ public class PolygonRenderer implements DiffractionRenderer {
 
 	@Override
 	public void render(Canvas canvas, DiffractionParameters params, int size, int resolution) {
-		final int thetaStepCount = 256;
+		final int thetaStepCount = 128;
 		final double deltaTheta = 2 * Math.PI / thetaStepCount;
 		final double phasorMultiplier = 1_000_000_000 * (1 / params.getDistanceSA() + 1 / params.getDistanceAW()) * Math.PI / params.getWavelength();
 

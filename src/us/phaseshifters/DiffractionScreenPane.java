@@ -20,7 +20,7 @@ public class DiffractionScreenPane extends Pane {
 	}
 	
 	public void drawCanvas(DiffractionParameters params, DiffractionRenderer renderer) {
-		final int resolution = (renderer instanceof PolygonRenderer) ? 3 : 1;
+		final int resolution = (renderer instanceof PolygonRenderer) ? 2 : 1;
 
 		int size = (int) Math.min(getWidth(), getHeight());
 		canvas.setWidth(size);

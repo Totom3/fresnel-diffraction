@@ -31,7 +31,7 @@ public class AperturePane extends Pane {
 		getChildren().add(canvas);
 
 		setOnMouseReleased(e -> {
-			pointList.add(new Vec2D((int) e.getX(), (int) e.getY()));
+			pointList.add(new Vec2D((int) e.getX() - getWidth()/2, (int) e.getY() - getHeight()/2));
 			drawCanvas();
 		});
 
@@ -47,6 +47,8 @@ public class AperturePane extends Pane {
 
 	public void drawCanvas() {
 		GraphicsContext gc = canvas.getGraphicsContext2D();
+		double shiftX = width / 2;
+		double shiftY = height / 2;
 
 		gc.setFill(Main.params.isReversed() ? Color.BLACK : Color.WHITE);
 		gc.fillRect(0, 0, width, height);
@@ -57,26 +59,26 @@ public class AperturePane extends Pane {
 		double offset = circleSize / 2;
 		gc.setFill(Main.params.isReversed() ? Color.WHITE : Color.BLACK);
 		for (Vec2D p : pointList) {
-			gc.fillOval(p.x - offset, p.y - offset, circleSize, circleSize);
+			gc.fillOval(p.x + shiftX - offset, p.y + shiftY - offset, circleSize, circleSize);
 		}
 
 		// Draw polygon
 		double[] xPoints = new double[pointList.size()];
 		double[] yPoints = new double[pointList.size()];
 		for (int i = 0; i < pointList.size(); i++) {
-			xPoints[i] = pointList.get(i).x;
-			yPoints[i] = pointList.get(i).y;
+			xPoints[i] = pointList.get(i).x + shiftX;
+			yPoints[i] = pointList.get(i).y + shiftY;
 		}
 
 		gc.fillPolygon(xPoints, yPoints, xPoints.length);
-		
+
 		gc.setLineWidth(2);
 		gc.setStroke(Color.RED);
-		
+
 		double w = canvas.getWidth();
 		double h = canvas.getHeight();
-		gc.strokeLine(w/2, 0, w/2, h);
-		gc.strokeLine(0, h/2, w, h/2);
+		gc.strokeLine(w / 2, 0, w / 2, h);
+		gc.strokeLine(0, h / 2, w, h / 2);
 	}
 
 }
