@@ -11,7 +11,7 @@ import us.phaseshifters.ComplexNumber;
  */
 public class PoissonSpotRenderer implements DiffractionRenderer {
 
-	private static final double RADIUS = 50;
+	private static final double RADIUS = 200;
 	private static final double RADIUS_SQUARED = RADIUS * RADIUS;
 
 	@Override
@@ -43,8 +43,8 @@ public class PoissonSpotRenderer implements DiffractionRenderer {
 			}
 		}
 
+		// Render each pixel
 		// TODO: rescale values appropriately
-		// Paint values
 		GraphicsContext graphics = canvas.getGraphicsContext2D();
 		for (int x = 0; x < size; x += resolution) {
 			for (int y = 0; y < size; y += resolution) {

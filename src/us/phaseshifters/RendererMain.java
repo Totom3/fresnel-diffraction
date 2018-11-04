@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import us.phaseshifters.renderers.DiffractionParameters;
 import us.phaseshifters.renderers.PoissonSpotRenderer;
+import us.phaseshifters.renderers.SingleSlitRenderer;
 
 /**
  *
@@ -22,9 +23,9 @@ public class RendererMain extends Application {
 		stage.setScene(scene);
 		stage.show();
 
-		System.out.println("Drawing...");
-		pane.drawCanvas(params, new PoissonSpotRenderer());
-		System.out.println("Done drawing!");
+		System.out.println("Rendering...");
+		pane.drawCanvas(params, new SingleSlitRenderer());
+		System.out.println("Finished rendering!");
 	}
 
 	/**
