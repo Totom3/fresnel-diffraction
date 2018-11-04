@@ -29,7 +29,7 @@ public class DiffractionParameters {
         return reversed.get();
     }
 
-    public DiffractionParameters(SimpleDoubleProperty wavelength, DoubleProperty distanceSA, DoubleProperty distanceAW, DoubleProperty intensity, BooleanProperty reversed) {
+    public DiffractionParameters(DoubleProperty wavelength, DoubleProperty distanceSA, DoubleProperty distanceAW, DoubleProperty intensity, BooleanProperty reversed) {
         this.wavelength = wavelength;
         this.distanceSA = distanceSA;
         this.distanceAW = distanceAW;

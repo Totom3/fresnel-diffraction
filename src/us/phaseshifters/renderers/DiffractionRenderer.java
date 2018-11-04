@@ -11,7 +11,7 @@ public interface DiffractionRenderer {
 	
 	void render(Canvas canvas, DiffractionParameters params, int size, int resolution);
 
-	default Color wavelengthToColor(double wavelength) {
+	default Color getColor(double wavelength, double brightness) {
 
         double intensityMax = 255;
         double gamma = 0.8;
@@ -66,6 +66,10 @@ public interface DiffractionRenderer {
         rgb[1] = green == 0.0 ? 0 : (int) Math.round(intensityMax * Math.pow(green * factor, gamma));
         rgb[2] = blue == 0.0 ? 0 : (int) Math.round(intensityMax * Math.pow(blue * factor, gamma));
 
-        return Color.rgb(rgb[0], rgb[1], rgb[2]);
+        return Color.rgb(rbgRange(brightness * rgb[0]), rbgRange(brightness * rgb[1]), rbgRange(brightness * rgb[2]));
     }
+	
+	default int rbgRange(double x) {
+		return (int) Math.max(0, Math.min(255, x));
+	}
 }

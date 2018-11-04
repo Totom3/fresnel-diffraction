@@ -52,7 +52,6 @@ public class SquareRenderer implements DiffractionRenderer {
 		// Render each pixel
 		double lightShift = 255 - max;
 		double lightScale = -(1 + (255 / (min - max)));
-		Color color = wavelengthToColor(params.getWavelength());
 		GraphicsContext graphics = canvas.getGraphicsContext2D();
 		for (int i = 0; i < binCount; ++i) {
 			for (int j = 0; j < binCount; ++j) {
@@ -65,8 +64,7 @@ public class SquareRenderer implements DiffractionRenderer {
 				double intensity = probabilities[i][j];
 
 				intensity = Math.min(255, intensity);
-				double brightness = Color.grayRgb((int) intensity).getBrightness();
-				graphics.setFill(Color.hsb(color.getHue(), color.getSaturation(), brightness));
+				graphics.setFill(getColor(params.getWavelength(), intensity / 255.0));
 				graphics.fillRect(x1, y1, resolution, resolution);
 				graphics.fillRect(x1, y2, resolution, resolution);
 				graphics.fillRect(x2, y1, resolution, resolution);

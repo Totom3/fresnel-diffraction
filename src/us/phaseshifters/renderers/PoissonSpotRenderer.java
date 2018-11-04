@@ -16,12 +16,12 @@ public class PoissonSpotRenderer implements DiffractionRenderer {
 
 	@Override
 	public void render(Canvas canvas, DiffractionParameters params, int size, int resolution) {
-		final int thetaStepCount = 200;
+		final int thetaStepCount = 256;
 		final double deltaTheta = 2 * Math.PI / thetaStepCount;
 		final double phasorMultiplier = 1_000_000_000 * (1 / params.getDistanceSA() + 1 / params.getDistanceAW()) * Math.PI / params.getWavelength();
 
 		final int shift = size / 2;
-		final double radiiStep = 1.0;
+		final double radiiStep = 0.5;
 		final int maxRadius = (int) (Math.sqrt(2) * size / resolution);
 		final int radiiCount = (int) (maxRadius / radiiStep);
 
@@ -48,11 +48,13 @@ public class PoissonSpotRenderer implements DiffractionRenderer {
 		GraphicsContext graphics = canvas.getGraphicsContext2D();
 		for (int x = 0; x < size; x += resolution) {
 			for (int y = 0; y < size; y += resolution) {
-				int x1 = x - shift;
-				int y1 = y - shift;
-				int bin = (int) Math.round(Math.sqrt((double) ((x1 * x1) + (y1 * y1))) / radiiStep);
+				double x1 = (x - shift);
+				double y1 = (y - shift);
+				
+				
+				int bin = (int) Math.round(Math.sqrt(((double)(x1 * x1) + (y1 * y1))) / radiiStep);
 
-				graphics.setFill(Color.gray(probabilities[bin] / max));
+				graphics.setFill(getColor(params.getWavelength(), params.getIntensity() * probabilities[bin] / max));
 				graphics.fillRect(x, y, resolution, resolution);
 			}
 		}

@@ -24,7 +24,7 @@ public class DoubleSlitRenderer implements DiffractionRenderer {
 		int shift = size / 2;
 		double max = 0;
 		for (int i = 0; i < samplesCount; ++i) {
-			double x = ((i * resolution) - shift) / 300.0;
+			double x = ((i * resolution) - shift);
 			double intensity = getIntensity(x, params);
 
 			probabilities[i] = intensity;
@@ -36,8 +36,6 @@ public class DoubleSlitRenderer implements DiffractionRenderer {
 		double median = median(probabilities);
 
 		GraphicsContext gc = canvas.getGraphicsContext2D();
-		Color color = wavelengthToColor(params.getWavelength());
-
 		double correctionFactor = (255.0 - 40.0) / (max - median);
 		for (int i = 0; i < samplesCount; ++i) {
 			double intensity = probabilities[i];
@@ -47,7 +45,7 @@ public class DoubleSlitRenderer implements DiffractionRenderer {
 
 			intensity = Math.max(0, Math.min(255, intensity));
 
-			gc.setFill(Color.grayRgb((int) intensity));
+			gc.setFill(getColor(params.getWavelength(), intensity / 255.0));
 			gc.fillRect(i * resolution, 0, resolution, size);
 			gc.fillRect(size - 1 - i * resolution - resolution, 0, resolution, size);
 
