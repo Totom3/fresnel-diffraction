@@ -16,7 +16,7 @@ import us.phaseshifters.Vec2D;
 public class PolygonRenderer implements DiffractionRenderer {
 
 	public static final List<Vec2D> SAMPLE_POINTS;
-	
+
 	static {
 		SAMPLE_POINTS = new ArrayList<>();
 		SAMPLE_POINTS.add(new Vec2D(25, 25));
@@ -24,7 +24,7 @@ public class PolygonRenderer implements DiffractionRenderer {
 		SAMPLE_POINTS.add(new Vec2D(-25, -25));
 		SAMPLE_POINTS.add(new Vec2D(-25, 25));
 	}
-	
+
 	private final List<Vec2D> points;
 
 	public PolygonRenderer(List<Vec2D> points) {
@@ -37,25 +37,37 @@ public class PolygonRenderer implements DiffractionRenderer {
 		final double deltaTheta = 2 * Math.PI / thetaStepCount;
 		final double phasorMultiplier = 1_000_000_000 * (1 / params.getDistanceSA() + 1 / params.getDistanceAW()) * Math.PI / params.getWavelength();
 
+		final int steps = size / resolution;
 		double probabilities[][] = new double[size / resolution][size / resolution];
 
-		for (int x = 0; x < size; x += resolution) {
-			for (int y = 0; y < size; y += resolution) {
+		int shift = size / 2;
+
+		for (int i = 0; i < steps; ++i) {
+			for (int j = 0; j < steps; ++j) {
+				int x = shift - (i * resolution);
+				int y = shift - (j * resolution);
 
 				ComplexNumber totalPhasor = outerIntegral(x, y, thetaStepCount, deltaTheta, phasorMultiplier);
-				probabilities[x][y] = totalPhasor.normSquared();
+				probabilities[i][j] = totalPhasor.normSquared();
 			}
 		}
-		
+
 		GraphicsContext graphics = canvas.getGraphicsContext2D();
-		for (int x = 0; x < size; x += resolution) {
-			for (int y = 0; y < size; y += resolution) {
-				
-				double intensity = probabilities[x][y];
+		for (int i = 0; i < steps; ++i) {
+			for (int j = 0; j < steps; ++j) {
+				int x = (i * resolution);
+				int y = (j * resolution);
+
+				double intensity = probabilities[i][j];
 				intensity = Math.max(0, Math.min(255, intensity));
-				graphics.setFill(Color.grayRgb((int)intensity));
+				graphics.setFill(Color.grayRgb((int) intensity));
 				graphics.fillRect(x, y, resolution, resolution);
 			}
+		}
+
+		int i = size / 2;
+		for (int j = 0; j < steps; ++j) {
+			System.out.println(j + "\t" + probabilities[i][j]);
 		}
 	}
 
@@ -65,7 +77,8 @@ public class PolygonRenderer implements DiffractionRenderer {
 		ComplexNumber totalPhasor = new ComplexNumber();
 
 		boolean insidePolygon = false;
-
+		Vec2D phi = new Vec2D(x, y);
+		
 		for (int t = 0; t < thetaStepCount; ++t) {
 			double theta = t * deltaTheta;
 			double cos = Math.cos(theta);
@@ -89,15 +102,16 @@ public class PolygonRenderer implements DiffractionRenderer {
 				}
 
 				// Add point
-				if (cos != 0) {
-					radii.add(point.x / cos);
+				double r = (cos != 0) ? point.x / cos : point.y / sin;
+				if (r >= 0) {
+					radii.add(r);
 				}
 			}
 
-			// Case #2: points
+			// Case #2: edges
 			for (int i = 0; i < points.size(); ++i) {
-				Vec2D point = points.get(i);
-				Vec2D next = next(i);
+				Vec2D point = points.get(i).subtract(phi);
+				Vec2D next = next(i).subtract(phi);
 				if (!isInSector(point, next, n)) {
 					continue;
 				}
@@ -116,7 +130,9 @@ public class PolygonRenderer implements DiffractionRenderer {
 
 			if (t == 0) {
 				insidePolygon = radii.size() % 2 == 1;
-				totalPhasor.real -= 1;
+				if (insidePolygon) {
+					totalPhasor.real -= 1;
+				}
 			}
 
 			double sgn = insidePolygon ? 1 : -1;
@@ -137,7 +153,6 @@ public class PolygonRenderer implements DiffractionRenderer {
 	}
 
 	private boolean isInSector(Vec2D lim1, Vec2D lim2, Vec2D vec) {
-		final double c1 = lim1.cross(lim2);
-		return (lim1.cross(vec) * c1) >= 0 && (lim2.cross(vec) * c1) <= 0;
+		return (lim1.cross(vec) * lim1.cross(lim2)) - EPSILON > 0 && (lim2.cross(vec) * lim2.cross(lim1)) - EPSILON > 0;
 	}
 }
