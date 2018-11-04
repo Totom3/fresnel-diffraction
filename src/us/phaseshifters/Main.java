@@ -1,7 +1,9 @@
 package us.phaseshifters;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -10,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -53,7 +56,7 @@ public class Main extends Application{
     public Label distanceASValueLabel;
     public Label sourceIntensityValueLabel;
     
-    public boolean reversed;
+    public static boolean reversed;
     public boolean displaySetup;
 
     @Override
@@ -290,6 +293,51 @@ public class Main extends Application{
         primaryStage.setScene(scene);
         primaryStage.setFullScreen(true);
         primaryStage.show();
+        startAperture();
+        
+    }
+    //temporary method to start AperturePane
+    public void startAperture(){
+        Stage stage = new Stage();
+        Scene scene = new Scene(new AperturePane(), 400, 400);
+        
+        scene.setOnKeyReleased(e->{
+            GraphicsContext gc = AperturePane.canvas.getGraphicsContext2D();
+            if((e.getCode() == KeyCode.ENTER ) && (AperturePane.pointList.size() > 2)){
+                Point p1 = AperturePane.pointList.get(0);
+                Point p2 = AperturePane.pointList.get(AperturePane.pointList.size() - 1);
+                gc.setLineWidth(5);
+                
+                AperturePane.connected = true;
+                ArrayList<Point> pList = AperturePane.pointList;
+                
+                double[] xPoints = new double[pList.size()];
+                double[] yPoints = new double[pList.size()];
+                for (int i = 0; i < pList.size(); i++) {
+                    xPoints[i] = pList.get(i).getX();
+                    yPoints[i] = pList.get(i).getY(); 
+                }
+                if(!reversed){
+                    gc.setFill(Color.WHITE);
+                }else{
+                    gc.setFill(Color.BLACK);
+                }
+                gc.fillRect(0, 0, 400, 400);
+                if(!reversed){
+                    gc.setFill(Color.BLACK);
+                }else{
+                    gc.setFill(Color.WHITE);
+                }
+                gc.fillPolygon(xPoints, yPoints, xPoints.length);
+            }
+            if(e.getCode() == KeyCode.ESCAPE){
+                System.exit(0);
+            }
+        });
+        
+        stage.setScene(scene);
+        stage.show();
+                
     }
 
     /**
