@@ -13,10 +13,10 @@ import us.phaseshifters.ComplexNumber;
  */
 public class SingleSlitRenderer implements DiffractionRenderer {
 
-	public static final double WIDTH = .1;
+	public static final double WIDTH = 10;
 	public static final double HALF_WIDTH = WIDTH / 2;
 
-	private static final int MAX_RADIUS = 2000;
+	private static final int MAX_RADIUS = 1_000_000;
 
 	@Override
 	public void render(Canvas canvas, DiffractionParameters params, int size, int resolution) {
