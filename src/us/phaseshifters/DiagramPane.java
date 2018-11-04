@@ -53,17 +53,17 @@ public class DiagramPane extends Pane {
             drawDoubleSlit(sourceXStart, SA, gc);
             //Aperture Text
             gc.setFont(new Font("Impact", 16));
-            gc.fillText("Aperture", SA - width / 8, height - height / 15);
-        } else if (preset.equals(ExperimentType.SINGLE_SLIT) || reverse && preset.equals(ExperimentType.OBJECT)) {
+            gc.fillText("Aperture", SA - width / 12, height - height / 15);
+        } else if (preset.equals(ExperimentType.SINGLE_SLIT) || reverse && preset.equals(ExperimentType.OBJECT) || reverse && preset.equals(ExperimentType.CIRCULAR_APERTURE)) {
             drawHoleObject(sourceXStart, SA, gc);
             //Aperture Text
             gc.setFont(new Font("Impact", 16));
-            gc.fillText("Aperture", SA - width / 8, height - height / 15);
+            gc.fillText("Aperture", SA - width / 12, height - height / 15);
         } else {
             drawObject(sourceXStart, SA, gc);
             //Aperture Text
             gc.setFont(new Font("Impact", 16));
-            gc.fillText("Aperture", SA - width / 8, height/2);
+            gc.fillText("Aperture", SA - width / 12, height/2);
         }
 
         //Source Text

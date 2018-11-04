@@ -10,5 +10,5 @@ package us.phaseshifters;
  * @author Sam
  */
 public enum ExperimentType {
-    DOUBLE_SLIT, SINGLE_SLIT, OBJECT
+    DOUBLE_SLIT, SINGLE_SLIT, OBJECT, CIRCULAR_APERTURE
 }

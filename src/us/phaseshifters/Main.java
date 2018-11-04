@@ -122,7 +122,7 @@ public class Main extends Application {
         setupCheckBox.fire();
         CheckBox reversedCheckBox = new CheckBox("Reversed");
         String[] stringArray = {
-            "Custom Aperture", "Single-Slit", "Double - Slit"
+            "Custom Aperture", "Single-Slit", "Double-Slit", "Circular Aperture"
         };
 
         ComboBox modeComboBox = new ComboBox();
@@ -202,13 +202,11 @@ public class Main extends Application {
         });
 
         reversedCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
-                updateDiaPane(setupCheckBox, centerBox, diaPane);
+            public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {               
                 reversed = reversedCheckBox.isSelected();
+                aperture.pointList.clear();
                 aperture.drawCanvas();
-                centerBox.getChildren().remove(1);
-                centerBox.getChildren().add(aperture);
-
+                updateDiaPane(setupCheckBox, centerBox, diaPane, getComboBoxExperiment(modeComboBox));
             }
         });
 
@@ -266,11 +264,18 @@ public class Main extends Application {
 
             @Override
             public void changed(ObservableValue arg0, Object arg1, Object arg2) {
-
                 wavelengthValue = (int) wavelength.getValue();
                 wavelengthValueLabel.setText(String.valueOf(wavelengthValue) + " nm");
-                updateDiaPane(setupCheckBox, centerBox, diaPane);
+                updateDiaPane(setupCheckBox, centerBox, diaPane, getComboBoxExperiment(modeComboBox));
 
+            }
+        });
+
+        //Adding listener to ComboBox
+        modeComboBox.valueProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+                updateDiaPane(setupCheckBox, centerBox, diaPane, getComboBoxExperiment(modeComboBox));
             }
         });
 
@@ -281,7 +286,7 @@ public class Main extends Application {
 
                 distanceASValue = distanceAS.getValue();
                 distanceASValueLabel.setText(String.format("%.2f", distanceASValue) + " units");
-                updateDiaPane(setupCheckBox, centerBox, diaPane);
+                updateDiaPane(setupCheckBox, centerBox, diaPane, getComboBoxExperiment(modeComboBox));
 
             }
         });
@@ -293,7 +298,7 @@ public class Main extends Application {
 
                 sourceIntensityValue = sourceIntensity.getValue();
                 sourceIntensityValueLabel.setText(String.format("%.2f", sourceIntensityValue) + " units");
-                updateDiaPane(setupCheckBox, centerBox, diaPane);
+                updateDiaPane(setupCheckBox, centerBox, diaPane, getComboBoxExperiment(modeComboBox));
 
             }
         });
@@ -303,7 +308,7 @@ public class Main extends Application {
         primaryStage.setFullScreen(true);
         primaryStage.show();
 
-        updateDiaPane(setupCheckBox, centerBox, diaPane);
+        updateDiaPane(setupCheckBox, centerBox, diaPane, getComboBoxExperiment(modeComboBox));
 
     }
 
@@ -315,14 +320,31 @@ public class Main extends Application {
         launch(args);
     }
 
-    public void updateDiaPane(CheckBox setupCheckBox, VBox centerBox, DiagramPane diaPane) {
+    public void updateDiaPane(CheckBox setupCheckBox, VBox centerBox, DiagramPane diaPane, ExperimentType expr) {
         if (setupCheckBox.isSelected()) {
             centerBox.getChildren().add(0, new DiagramPane());
             System.out.println("nyeee");
             diaPane.drawCanvas(wavelengthValue, reversed,
-                    distanceASValue, ExperimentType.DOUBLE_SLIT, 0,
+                    distanceASValue, expr, 0,
                     (int) centerBox.getHeight() / 2, (int) centerBox.getWidth());
         }
+    }
+
+    public ExperimentType getComboBoxExperiment(ComboBox modeComboBox) {
+        
+        ExperimentType experiment = ExperimentType.DOUBLE_SLIT;
+
+        if (modeComboBox.getValue().equals("Double-Slit")) {
+            experiment = ExperimentType.DOUBLE_SLIT;
+        } else if (modeComboBox.getValue().equals("Single-Slit")) {
+            experiment = ExperimentType.SINGLE_SLIT;
+        } else if (modeComboBox.getValue().equals("Circular Aperture")) {
+            experiment = ExperimentType.CIRCULAR_APERTURE;
+        } else if (modeComboBox.getValue().equals("Custom Aperture")) {
+            experiment = ExperimentType.OBJECT;
+        }
+        
+        return experiment;
     }
 
 }
