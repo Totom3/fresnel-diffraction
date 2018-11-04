@@ -13,14 +13,6 @@ import us.phaseshifters.ComplexNumber;
  */
 public class SquareRenderer implements DiffractionRenderer {
 
-<<<<<<< HEAD:src/us/phaseshifters/renderers/SingleSlitRenderer.java
-    @Override
-    public void render(Canvas canvas, DiffractionParameters params, int size, int resolution) {
-        
-    }
-
-	
-=======
 	public static final int WIDTH = 50;
 	public static final int HEIGHT = 50;
 	public static final int HALF_WIDTH = WIDTH / 2;
@@ -159,5 +151,4 @@ public class SquareRenderer implements DiffractionRenderer {
 	private boolean isRadiusValid(double radius, double trig, int shift, int lim) {
 		return radius >= 0 && Math.abs(radius * trig + shift) < lim;
 	}
->>>>>>> 2b2368f7febca123bb3322cfd6e4d717a54370e2:src/us/phaseshifters/renderers/SquareRenderer.java
 }
