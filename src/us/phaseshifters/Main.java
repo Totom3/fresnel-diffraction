@@ -302,6 +302,14 @@ public class Main extends Application {
 
             }
         });
+        
+        //Adding action to button
+        generateImageButton.setOnAction(e ->{
+            ImageDisplay image = new ImageDisplay();
+            Stage secondaryStage = new Stage();
+            image.start(secondaryStage);
+            
+        });
 
         primaryStage.setTitle("Hackathon 2018");
         primaryStage.setScene(scene);
