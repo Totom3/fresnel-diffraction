@@ -1,9 +1,12 @@
 package us.phaseshifters;
 
+import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -15,6 +18,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -35,9 +39,9 @@ public class Main extends Application {
 	int height;
 	int width;
 
-	public int wavelengthValue;
-	public double distanceASValue;
-	public double sourceIntensityValue;
+	public static int wavelengthValue;
+	public static double distanceASValue;
+	public static double sourceIntensityValue;
 
 	public Label wavelengthValueLabel;
 	public Label distanceASValueLabel;
@@ -121,7 +125,7 @@ public class Main extends Application {
 		};
 
 		ComboBox modeComboBox = new ComboBox();
-		modeComboBox.getItems().addAll((Object[]) stringArray);
+		modeComboBox.getItems().addAll(stringArray);
 		modeComboBox.setValue(stringArray[0]);
 		Button generateImageButton = new Button("Generate Image");
 
@@ -219,9 +223,12 @@ public class Main extends Application {
 
 		Scene scene = new Scene(mainPane, width, height);
 
-		scene.setOnKeyPressed((event) -> {
-			if (event.getCode() == KeyCode.ESCAPE) {
-				System.exit(0);
+		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.ESCAPE) {
+					System.exit(0);
+				}
 			}
 		});
 
@@ -274,39 +281,38 @@ public class Main extends Application {
 	//temporary method to start AperturePane
 	public void startAperture() {
 		Stage stage = new Stage();
-		stage.setAlwaysOnTop(true);
-		stage.setTitle("Custom Polygon Aperture");
-
 		AperturePane aperture = new AperturePane();
 		Scene scene = new Scene(aperture, 400, 400);
 
 		scene.setOnKeyReleased(e -> {
 			List<Vec2D> points = aperture.getPoints();
-			int pointsNum = points.size();
 			GraphicsContext gc = aperture.getCanvas().getGraphicsContext2D();
-			if ((e.getCode() == KeyCode.ENTER) && (pointsNum > 2)) {
+			if ((e.getCode() == KeyCode.ENTER) && (points.size() > 2)) {
 				Vec2D p1 = points.get(0);
-				Vec2D p2 = points.get(pointsNum - 1);
+				Vec2D p2 = aperture.getPoints().get(aperture.getPoints().size() - 1);
 				gc.setLineWidth(5);
 
-				double[] xPoints = new double[pointsNum];
-				double[] yPoints = new double[pointsNum];
-				for (int i = 0; i < pointsNum; i++) {
+				double[] xPoints = new double[points.size()];
+				double[] yPoints = new double[points.size()];
+				for (int i = 0; i < points.size(); i++) {
 					xPoints[i] = points.get(i).x;
 					yPoints[i] = points.get(i).y;
-
-					System.out.println(xPoints[i] + " " + yPoints[i]);
 				}
-
-				gc.setFill(reversed ? Color.BLACK : Color.WHITE);
+				if (!reversed) {
+					gc.setFill(Color.WHITE);
+				} else {
+					gc.setFill(Color.BLACK);
+				}
 				gc.fillRect(0, 0, 400, 400);
-				gc.setFill(reversed ? Color.WHITE : Color.BLACK);
+				if (!reversed) {
+					gc.setFill(Color.BLACK);
+				} else {
+					gc.setFill(Color.WHITE);
+				}
 				gc.fillPolygon(xPoints, yPoints, xPoints.length);
-
 			}
-
 			if (e.getCode() == KeyCode.ESCAPE) {
-				stage.close();
+				System.exit(0);
 			}
 		});
 

@@ -3,6 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/C:/Users/Totom3/Desktop/fresnel-diffraction/src/us/phaseshifters/renderers/SquareRenderer.java</file>
             <file>file:/C:/Users/Totom3/Desktop/fresnel-diffraction/src/us/phaseshifters/DiffractionScreenPane.java</file>
             <file>file:/C:/Users/Totom3/Desktop/fresnel-diffraction/src/us/phaseshifters/renderers/PoissonSpotRenderer.java</file>
@@ -11,6 +12,14 @@
             <file>file:/C:/Users/Totom3/Desktop/fresnel-diffraction/src/us/phaseshifters/renderers/DiffractionRenderer.java</file>
             <file>file:/C:/Users/Totom3/Desktop/fresnel-diffraction/src/us/phaseshifters/Main.java</file>
             <file>file:/C:/Users/Totom3/Desktop/fresnel-diffraction/src/us/phaseshifters/RendererMain.java</file>
+=======
+            <file>file:/C:/Users/Administrator/Desktop/Fresnel/src/us/phaseshifters/renderers/SquareRenderer.java</file>
+            <file>file:/C:/Users/Administrator/Desktop/Fresnel/nbproject/build-impl.xml</file>
+            <file>file:/C:/Users/Administrator/Desktop/Fresnel/src/us/phaseshifters/renderers/DiffractionRenderer.java</file>
+            <file>file:/C:/Users/Administrator/Desktop/Fresnel/src/us/phaseshifters/renderers/DiffractionParameters.java</file>
+            <file>file:/C:/Users/Administrator/Desktop/Fresnel/src/us/phaseshifters/renderers/SingleSlitRenderer.java</file>
+            <file>file:/C:/Users/Administrator/Desktop/Fresnel/src/us/phaseshifters/RendererMain.java</file>
+>>>>>>> f12bf72e2657b7ae39324683d004ab8d00276a5a
         </group>
     </open-files>
 </project-private>
